@@ -22,11 +22,13 @@ import json
 # imgpath = 'check_code.jpg'
 
 def setLogger():
-    logger = logging.getLogger(__file__)
+    FILE_SIZE = 10*1024*1024
+    FILE_COUNT = 1
+    logger = logging.getLogger("checkin")
     logger.setLevel(logging.INFO)
-    log_file = "{}.log".format(__file__)
-    os.makedirs(os.path.join("./data",log_file),exist_ok=True)
-    logHandler = RotatingFileHandler(os.path.join("./data",log_file), maxBytes=10*1024*1024, backupCount=1, encoding='UTF-8')
+    #log_file = "{}.log".format(__file__)
+    #os.makedirs("./data/checkin.log",exist_ok=True)
+    logHandler = RotatingFileHandler("./data/checkin.log", maxBytes=FILE_SIZE, backupCount=FILE_COUNT, encoding='UTF-8')
     logHandler.setLevel(logging.INFO)
     consoleHandler = logging.StreamHandler()
     consoleHandler.setLevel(logging.INFO)
@@ -262,7 +264,7 @@ def do_schedule():
     logger.info("正在运行计划任务, 每天签到一次")
 
     while True:
-        logger.info("距离下一次任务的时间: {:.1f}分钟".format(schedule.idle_seconds()), end='\r')
+        logger.info("距离下一次任务的时间: {:.1f}分钟".format(schedule.idle_seconds()))
         schedule.run_pending()  # 运行所有可以运行的任务
         time.sleep(30)
 
