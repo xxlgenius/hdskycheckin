@@ -50,3 +50,6 @@
 docker run -v /yourdatafile:/app/data handsomegenius/hdskycheckin
 ```
 
+## 鸣谢
+
+[NexusPHP_checkin](https://github.com/TeraDew/NexusPHP_Checkin)
