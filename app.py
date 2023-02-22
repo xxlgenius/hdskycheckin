@@ -21,6 +21,8 @@ import json
 
 # imgpath = 'check_code.jpg'
 
+
+
 def setLogger():
     FILE_SIZE = 10*1024*1024
     FILE_COUNT = 1
@@ -157,6 +159,7 @@ def checkin(session,imageHash):
 def job(userName:str,userPwd:str,headless:bool,web:str,webaddr:str):
     logger.info(time.ctime()+"/开始执行")
     loginurl = 'https://hdsky.me/login.php'
+    indexurl = "https://hdsky.me/index.php"
     driver = None
     webOptions = None
     if web == "chrome":
@@ -183,8 +186,10 @@ def job(userName:str,userPwd:str,headless:bool,web:str,webaddr:str):
             webOptions.add_argument('--headless')
             webOptions.add_argument("--disable-gpu")
         #driver = webdriver.Firefox(options=webOptions)
+        #driver = webdriver.Firefox(options=webOptions)       
     logger.info(time.ctime()+"/开始连接远程浏览器")
     driver = webdriver.Remote(command_executor=webaddr,options=webOptions)
+    #driver = webdriver.Chrome()
     logger.info(time.ctime()+"/浏览器注册完成")
 
 
@@ -192,19 +197,16 @@ def job(userName:str,userPwd:str,headless:bool,web:str,webaddr:str):
     # 打开网页
     driver.get(loginurl)
     logger.info(time.ctime()+"/打开目标网页")
-    '''
     time.sleep(5)
     # cookies注入
-    with open('./app/data/cookies.json',"r",encoding="utf-8") as f1:
-        cookie = f1.read()
-        cookie = json.loads(cookie)
+    with open('./data/cookies.json',"r",encoding="utf-8") as f1:
+        cookie = json.loads(f1.read())
+        print( cookie)
         for c in cookie:
             driver.add_cookie(c)
     # 刷新页面
-    driver.get(loginurl)
-    #sleep(3)
+    driver.get(indexurl)
     '''
-
     logimgurl = driver.find_element(By.XPATH,'//*[@id="nav_block"]/form[2]/table/tbody/tr[4]/td[2]/img').get_attribute('src')
     imageHash = str(logimgurl).split('=')[-1]
     log_code = getCheckCode(imageHash, logimgurl)
@@ -219,11 +221,13 @@ def job(userName:str,userPwd:str,headless:bool,web:str,webaddr:str):
         driver.find_element(By.XPATH,'//*[@id="showup"]').click()
     except:
         logger.warning(time.ctime()+'/未找到目标元素，已签到')
-        
+    '''  
     # 定位并获取验证码src
     try:
         # 查找并点击签到按钮
-        WebDriverWait(driver,30).until(EC.presence_of_element_located((By.XPATH,'//*[@id="showupimg"]')))
+        WebDriverWait(driver,30).until(EC.presence_of_element_located((By.XPATH,'//*[@id="showup"]')))
+        driver.find_element(By.XPATH, '//*[@id="showup"]').click()
+        logger.info(time.ctime()+"点击签到按钮")
         imgurl = driver.find_element(By.XPATH,'//*[@id="showupimg"]').get_attribute('src')
     except:
         logger.error(time.ctime()+"/未找到目标签到图片元素")
@@ -288,10 +292,10 @@ if __name__ == '__main__':
         logger.error(time.ctime()+"/获取配置文件失败，ERROR")
         
     
-    #job(myconfig["usr"],myconfig["pwd"],myconfig["headless"],myconfig["browser"],myconfig["webaddr"])
-    logger.info("签到时间:" + myconfig["time"])
-    schedule.every().day.at(myconfig["time"]).do(job,myconfig["usr"],myconfig["pwd"],myconfig["headless"],myconfig["browser"],myconfig["webaddr"])
-    do_schedule()
+    job(myconfig["usr"],myconfig["pwd"],myconfig["headless"],myconfig["browser"],myconfig["webaddr"])
+    #logger.info("签到时间:" + myconfig["time"])
+    #schedule.every().day.at(myconfig["time"]).do(job,myconfig["usr"],myconfig["pwd"],myconfig["headless"],myconfig["browser"],myconfig["webaddr"])
+    #do_schedule()
     
 
 
