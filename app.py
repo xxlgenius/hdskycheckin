@@ -291,11 +291,10 @@ if __name__ == '__main__':
     except:
         logger.error(time.ctime()+"/获取配置文件失败，ERROR")
         
-    
     job(myconfig["usr"],myconfig["pwd"],myconfig["headless"],myconfig["browser"],myconfig["webaddr"])
-    #logger.info("签到时间:" + myconfig["time"])
-    #schedule.every().day.at(myconfig["time"]).do(job,myconfig["usr"],myconfig["pwd"],myconfig["headless"],myconfig["browser"],myconfig["webaddr"])
-    #do_schedule()
+    logger.info("签到时间:" + myconfig["time"])
+    schedule.every().day.at(myconfig["time"]).do(job,myconfig["usr"],myconfig["pwd"],myconfig["headless"],myconfig["browser"],myconfig["webaddr"])
+    do_schedule()
     
 
 
